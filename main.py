@@ -13,8 +13,6 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 
 
-# ─── AUTH DECORATORS ─────────────────────────────────────────────────────────
-
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -35,8 +33,7 @@ def librarian_required(f):
     return decorated
 
 
-# ─── ROUTES ──────────────────────────────────────────────────────────────────
-
+# Routes
 @app.route('/')
 def index():
     if 'user_id' in session:
@@ -77,8 +74,7 @@ def dashboard():
     return render_template('dashboard.html', stats=stats, recent_loans=recent_loans)
 
 
-# ─── BOOKS ───────────────────────────────────────────────────────────────────
-
+# Books
 @app.route('/books')
 @login_required
 def books():
@@ -137,8 +133,7 @@ def delete_book(book_id):
     return redirect(url_for('books'))
 
 
-# ─── MEMBERS ─────────────────────────────────────────────────────────────────
-
+# Members
 @app.route('/members')
 @login_required
 @librarian_required
@@ -166,8 +161,6 @@ def register_member():
         return redirect(url_for('members'))
     return render_template('register_member.html')
 
-
-# ─── LOANS ───────────────────────────────────────────────────────────────────
 
 @app.route('/loans')
 @login_required
@@ -212,7 +205,7 @@ def return_book(loan_id):
         return redirect(url_for('loans'))
 
     return_date = datetime.now().strftime('%Y-%m-%d')
-    due = loan['due_date']  # already a date object from psycopg2
+    due = loan['due_date'] 
     today = datetime.now().date()
 
     fine_amount = None
@@ -227,8 +220,7 @@ def return_book(loan_id):
     return redirect(url_for('loans'))
 
 
-# ─── STUDENT VIEWS ───────────────────────────────────────────────────────────
-
+# Student Views
 @app.route('/my-loans')
 @login_required
 def my_loans():
@@ -238,8 +230,6 @@ def my_loans():
     fines = model.get_my_fines(session['user_id'])
     return render_template('my_loans.html', loans=loan_list, fines=fines)
 
-
-# ─── REPORTS ─────────────────────────────────────────────────────────────────
 
 @app.route('/reports')
 @login_required
@@ -262,8 +252,7 @@ def pay_fine(fine_id):
     return redirect(url_for('reports'))
 
 
-# ─── ENTRY POINT ─────────────────────────────────────────────────────────────
-
+# EntryPoint
 if __name__ == '__main__':
     model.init_db()
     app.run(port=5003)

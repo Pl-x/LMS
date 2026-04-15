@@ -67,14 +67,6 @@ def init_db():
         )
     ''')
 
-    # Default librarian account
-    c.execute("SELECT id FROM users WHERE username = %s", ('librarian',))
-    if not c.fetchone():
-        c.execute(
-            "INSERT INTO users (username, password, role, full_name, email) VALUES (%s,%s,%s,%s,%s)",
-            ('librarian', 'admin123', 'librarian', 'Head Librarian', 'library@dkut.ac.ke')
-        )
-
     # Sample books
     c.execute("SELECT COUNT(*) FROM books")
     if c.fetchone()[0] == 0:
@@ -98,8 +90,7 @@ def init_db():
     conn.close()
 
 
-# ─── USERS ───────────────────────────────────────────────────────────────────
-
+#Users
 def get_user_by_credentials(username, password):
     conn = get_db()
     c = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -138,8 +129,7 @@ def create_student(username, password, full_name, email, phone):
     conn.close()
 
 
-# ─── BOOKS ───────────────────────────────────────────────────────────────────
-
+#Books
 def get_all_books(search=None, genre=None):
     conn = get_db()
     c = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -225,8 +215,7 @@ def delete_book(book_id):
     conn.close()
 
 
-# ─── LOANS ───────────────────────────────────────────────────────────────────
-
+#Loans
 def mark_overdue_loans():
     conn = get_db()
     c = conn.cursor()
@@ -329,8 +318,7 @@ def get_my_fines(student_id):
     return fines
 
 
-# ─── DASHBOARD ───────────────────────────────────────────────────────────────
-
+#Dashboard
 def get_dashboard_stats():
     conn = get_db()
     c = conn.cursor()
@@ -367,8 +355,7 @@ def get_recent_loans(limit=5):
     return loans
 
 
-# ─── REPORTS ─────────────────────────────────────────────────────────────────
-
+# Reports
 def get_top_borrowed(limit=10):
     conn = get_db()
     c = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
