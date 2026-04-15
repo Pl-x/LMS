@@ -1,5 +1,7 @@
 # DeKUT Library Management System
 
+NOTE: Certain aspects of the application specifically the templates are built in conjunction with an AI Agentic System (Claude Code).You are thereby requested to open a pull request if you encounter an issue or contact the developer at [issues.allan7ycrx.org](https://issues.allan7ycrx.org)
+
 **Dedan Kimathi University of Technology**  
 📍 Private Bag, Dedan Kimathi University, Nyeri, Kenya  
 🌐 [www.dkut.ac.ke](https://www.dkut.ac.ke)
