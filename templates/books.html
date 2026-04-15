@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Books Catalogue{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4><i class="fas fa-book me-2"></i>Books Catalogue</h4>
+    <div class="sub">Browse and search the library collection</div>
+  </div>
+  {% if session.role == 'librarian' %}
+  <a href="{{ url_for('add_book') }}" class="btn btn-gold">
+    <i class="fas fa-plus me-2"></i>Add Book
+  </a>
+  {% endif %}
+</div>
+
+<!-- Search / Filter -->
+<div class="card mb-4">
+  <div class="card-body py-3">
+    <form method="GET" class="row g-2 search-bar">
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-search text-muted"></i></span>
+          <input type="text" name="q" class="form-control" placeholder="Search by title, author or ISBN..."
+                 value="{{ q }}">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <select name="genre" class="form-select">
+          <option value="">All Genres</option>
+          {% for g in genres %}
+          <option value="{{ g.genre }}" {% if genre == g.genre %}selected{% endif %}>{{ g.genre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-dkut flex-fill">Filter</button>
+        <a href="{{ url_for('books') }}" class="btn btn-outline-secondary">Clear</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Books Table -->
+<div class="card">
+  <div class="card-header bg-dkut text-white d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-list me-2"></i>Library Collection</span>
+    <span class="badge bg-light text-dark">{{ books|length }} book(s)</span>
+  </div>
+  <div class="card-body p-0">
+    {% if books %}
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>Title</th><th>Author</th><th>ISBN</th><th>Genre</th>
+            <th>Copies</th><th>Available</th>
+            {% if session.role == 'librarian' %}<th>Actions</th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for book in books %}
+          <tr>
+            <td><strong>{{ book.title }}</strong></td>
+            <td>{{ book.author }}</td>
+            <td class="text-muted small font-monospace">{{ book.isbn or '—' }}</td>
+            <td><span class="badge bg-secondary">{{ book.genre or '—' }}</span></td>
+            <td class="text-center">{{ book.copies_total }}</td>
+            <td class="text-center">
+              {% if book.copies_available > 0 %}
+                <span class="badge-avail"><i class="fas fa-check me-1"></i>{{ book.copies_available }}</span>
+              {% else %}
+                <span class="badge-unavail"><i class="fas fa-times me-1"></i>Unavailable</span>
+              {% endif %}
+            </td>
+            {% if session.role == 'librarian' %}
+            <td>
+              <div class="d-flex gap-1">
+                <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-sm btn-outline-secondary">
+                  <i class="fas fa-edit"></i>
+                </a>
+                <form method="POST" action="{{ url_for('delete_book', book_id=book.id) }}"
+                      onsubmit="return confirm('Delete this book?')">
+                  <button type="submit" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </form>
+              </div>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-book-open"></i>
+      <p>No books found{% if q %} for "{{ q }}"{% endif %}.</p>
+      {% if session.role == 'librarian' %}
+      <a href="{{ url_for('add_book') }}" class="btn btn-dkut">Add a Book</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

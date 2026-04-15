@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Issue Book{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4><i class="fas fa-plus-circle me-2"></i>Issue Book</h4>
+    <div class="sub">Loan a book to a registered student</div>
+  </div>
+  <a href="{{ url_for('loans') }}" class="btn btn-outline-light btn-sm">
+    <i class="fas fa-arrow-left me-1"></i>Back
+  </a>
+</div>
+
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-body p-4">
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Select Book <span class="text-danger">*</span></label>
+            <select name="book_id" class="form-select" required>
+              <option value="">-- Choose an available book --</option>
+              {% for book in books %}
+              <option value="{{ book.id }}">
+                {{ book.title }} — {{ book.author }}
+                ({{ book.copies_available }} available)
+              </option>
+              {% endfor %}
+            </select>
+            {% if not books %}
+            <div class="form-text text-danger">No books are currently available.</div>
+            {% endif %}
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Select Student <span class="text-danger">*</span></label>
+            <select name="student_id" class="form-select" required>
+              <option value="">-- Choose a student --</option>
+              {% for s in students %}
+              <option value="{{ s.id }}">{{ s.full_name }} ({{ s.username }})</option>
+              {% endfor %}
+            </select>
+            {% if not students %}
+            <div class="form-text text-danger">
+              No students registered.
+              <a href="{{ url_for('register_member') }}">Register a student first.</a>
+            </div>
+            {% endif %}
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold">Loan Duration (days)</label>
+            <div class="input-group" style="max-width:200px">
+              <input type="number" name="due_days" class="form-control" value="14" min="1" max="90">
+              <span class="input-group-text">days</span>
+            </div>
+            <div class="form-text">Default is 14 days (2 weeks).</div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-dkut px-4" {% if not books or not students %}disabled{% endif %}>
+              <i class="fas fa-check-circle me-2"></i>Issue Book
+            </button>
+            <a href="{{ url_for('loans') }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

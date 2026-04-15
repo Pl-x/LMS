@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h4><i class="fas fa-chart-bar me-2"></i>Library Reports</h4>
+    <div class="sub">Overview of circulation, overdue books, and fines</div>
+  </div>
+</div>
+
+<!-- Fine Summary Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+      <div>
+        <div class="stat-value">KSH {{ fine_summary.total_fines or 0 }}</div>
+        <div class="stat-label">Total Fines Generated</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="stat-card red">
+      <div class="stat-icon"><i class="fas fa-exclamation-circle"></i></div>
+      <div>
+        <div class="stat-value">KSH {{ fine_summary.unpaid or 0 }}</div>
+        <div class="stat-label">Outstanding (Unpaid) Fines</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Overdue Books -->
+{% if overdue_loans %}
+<div class="card mb-4">
+  <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-exclamation-triangle me-2"></i>Overdue Books</span>
+    <span class="badge bg-light text-danger">{{ overdue_loans|length }}</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead><tr><th>Student</th><th>Book</th><th>Due Date</th><th>Days Late</th></tr></thead>
+        <tbody>
+          {% for item in overdue_loans %}
+          <tr>
+            <td>{{ item.full_name }}</td>
+            <td>{{ item.title }}</td>
+            <td class="text-danger small">{{ item.due_date }}</td>
+            <td>
+              <span class="badge-overdue">{{ item.days_late }} day(s)</span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="alert alert-success">
+  <i class="fas fa-check-circle me-2"></i>No overdue books at this time.
+</div>
+{% endif %}
+
+<div class="row g-4">
+  <!-- Top Borrowed -->
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-header bg-dkut text-white"><i class="fas fa-trophy me-2"></i>Most Borrowed Books</div>
+      <div class="card-body p-0">
+        {% if top_borrowed %}
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead><tr><th>#</th><th>Title</th><th>Author</th><th>Times Borrowed</th></tr></thead>
+            <tbody>
+              {% for item in top_borrowed %}
+              <tr>
+                <td>
+                  {% if loop.index0 == 0 %}<span style="color:gold;font-size:1.1rem">🥇</span>
+                  {% elif loop.index0 == 1 %}<span style="color:silver;font-size:1.1rem">🥈</span>
+                  {% elif loop.index0 == 2 %}<span style="color:#cd7f32;font-size:1.1rem">🥉</span>
+                  {% else %}<span class="text-muted">{{ loop.index }}</span>{% endif %}
+                </td>
+                <td><strong>{{ item.title }}</strong></td>
+                <td class="text-muted small">{{ item.author }}</td>
+                <td><span class="badge bg-success">{{ item.borrow_count }}×</span></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-3"><i class="fas fa-chart-bar"></i>No loan data yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Genre Stats -->
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-header bg-dkut text-white"><i class="fas fa-tags me-2"></i>Books by Genre</div>
+      <div class="card-body p-0">
+        {% if genre_stats %}
+        <ul class="list-group list-group-flush">
+          {% for g in genre_stats %}
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <i class="fas fa-bookmark text-dkut me-2"></i>
+              {{ g.genre or 'Uncategorised' }}
+            </span>
+            <div class="d-flex gap-2">
+              <span class="badge bg-secondary">{{ g.count }} title(s)</span>
+              <span class="badge-avail">{{ g.total_copies }} copies</span>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <div class="empty-state py-3"><i class="fas fa-tags"></i>No books added yet.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Add enumerate filter support via inline template workaround is not needed;
+// handled in template with loop.index0
+</script>
+{% endblock %}
