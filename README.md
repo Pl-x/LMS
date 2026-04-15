@@ -9,7 +9,7 @@
 ## Overview
 
 A Flask-based Library Management System built for DeKUT.  
-Uses Python + Flask + SQLite + Jinja2 templates + Bootstrap 5.
+Uses Python + Flask + AivenPostgreSQL + Jinja2 templates + Bootstrap 5.
 
 ---
 
