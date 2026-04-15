@@ -35,26 +35,20 @@ Uses Python + Flask + SQLite + Jinja2 templates + Bootstrap 5.
 ## Quick Start
 
 ```bash
-# 1. Create virtual environment
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+# 1. We are using UV to manage the virtual Environments and dependencies.Its first as it is built on Rust.
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # 2. Install dependencies
-pip install -r requirements.txt
+uv sync --frozen
 
-# 3. Run
-python app.py
+# 3. Run (using Gunicorn for production
+uv run gunicorn -w 2 --timeout 120 -b 0.0.0.0:$PORT main:app
 ```
 
-Open `http://localhost:5000` in your browser.
+Open `http://localhost:$PORT` in your browser.
 
 ---
-
-## Default Credentials
-
-| Role       | Username    | Password   |
-|------------|-------------|------------|
-| Librarian  | `librarian` | `admin123` |
+# Authentication and Authorization
 
 Students are registered by the librarian through the Members section.
 
@@ -63,10 +57,10 @@ Students are registered by the librarian through the Members section.
 ## Project Structure
 
 ```
-dkut_lms/
-├── app.py                   # Main Flask app + all routes
-├── lms.db                   # SQLite database (auto-created)
-├── requirements.txt
+lms/
+├── main.py                   # Main Flask app + all routes
+├── model.py
+├── pyproject.toml
 ├── static/
 │   └── css/
 │       └── style.css        # DeKUT green/gold theme
